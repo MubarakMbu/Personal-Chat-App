@@ -156,7 +156,6 @@
         display: flex;
         flex-direction: column;
         border-bottom: 1px solid gray;
-        height: calc(100% - 200px);
         overflow: hidden;
         .searchForm {
           padding: 10px;
@@ -172,12 +171,16 @@
             }
           }
         }
-      .searchUsers{
+      }
+      .users, .chats {
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px solid gray;
         padding: 10px;
         height: calc(100% - 160px);
         overflow-y: scroll;
         overflow-x: hidden;
-      }
+      
       }
 
       .userChat {

@@ -11,13 +11,17 @@ import {collection,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { AuthContext } from "../context/AuthContext";
+import { SearchContext } from "../context/SearchContext";
+import {ChatContext} from "../context/ChatContext";
 import User from "./User";
-import Chats from "./Chats";
+
+
 const Users = () => {
-  const [username, setUsername] = useState("");
   const [users, setUsers] = useState([]);
 
   const { currentUser } = useContext(AuthContext);
+  const{searchValue, getAndSetSearchValue} = useContext(SearchContext);
+  const { dispatch } = useContext(ChatContext);
   const usersInDb = useRef([]);
   
   useEffect( () => {
@@ -32,15 +36,20 @@ const Users = () => {
 
     fetchData();
   }, []);
-  
-  const handleChange = (value) => {
-    setUsername(value);
-    if(value.trim() !== ""){
-      setUsers(()=>(
-        usersInDb.current.filter((userDoc)=> (userDoc.data().displayName.startsWith(value.trim())))
-      ))
+  useEffect( () => {
+    const getUsers = ()=>{
+      setUsers(()=>{
+        if (searchValue.trim() !== ""){
+          return usersInDb.current.filter((userDoc)=>(userDoc.data().displayName.startsWith(searchValue)));
+        }else{
+          return ([]);
+      }
+      });
     }
-  };
+    getUsers();
+  }, [searchValue]);
+
+  
 
   const handleSelect = async (user) => {
     //check whether the group(chats in firestore) exists, if not create
@@ -53,6 +62,14 @@ const Users = () => {
         await setDoc(doc(db, "chats", combinedId), { messages: [] });
 
         //create user chats
+        // await updateFirestoreDb("userChats",currentUser.uid,{
+        //   userInfo: {
+        //     uid: user.uid,
+        //     displayName: user.displayName,
+        //     photoURL: user.photoURL,
+        //   },
+        //   date: serverTimestamp(),
+        // })
         await updateDoc(doc(db, "userChats", currentUser.uid), {
           [combinedId + ".userInfo"]: {
             uid: user.uid,
@@ -61,7 +78,14 @@ const Users = () => {
           },
           [combinedId + ".date"]: serverTimestamp(),
         });
-
+        // await updateFirestoreDb("userChats", user.uid,{
+        //   userinfo : {
+        //     uid: currentUser.uid,
+        //     displayName: currentUser.displayName,
+        //     photoURL: currentUser.photoURL,
+        //   },
+        //   date : serverTimestamp(),
+        // });
         await updateDoc(doc(db, "userChats", user.uid), {
           [combinedId + ".userInfo"]: {
             uid: currentUser.uid,
@@ -71,28 +95,20 @@ const Users = () => {
           [combinedId + ".date"]: serverTimestamp(),
         });
       }
+      dispatch({ type: "CHANGE_USER", payload: user });
     } catch (err) {
       console.log(err)
     }
-
     setUsers([]);
-    setUsername("")
+    getAndSetSearchValue("");
   };
   return (
-    <div className="search">
-      <div className="searchForm">
-        <input
-          type="text"
-          placeholder="Find a Friend"
-          onChange={(e) => handleChange(e.target.value)}
-          value={username}
-        />
-      </div>
-      {(username.trim() !== "" && users.length === 0) && <span>User not found!</span>}
-      {( username.trim() !== ""  && users.length > 0) && (<div className="searchUsers">{users.map((doc, id) => {
+    <div>
+      {searchValue.trim() !== "" && (users.length > 0 ?
+        (<div className="users">{users.map((doc, id) => {
             return (<User key={id} data={doc.data()} clickEvent={handleSelect}></User>)
-      })}</div>)}
-      {username.trim() === "" && <Chats/>}
+      })}</div>) : 
+      <span>User not found!</span>)} 
     </div>);
 };
 

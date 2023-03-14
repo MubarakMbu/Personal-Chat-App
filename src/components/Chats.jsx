@@ -2,35 +2,34 @@ import { doc, onSnapshot } from "firebase/firestore";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ChatContext } from "../context/ChatContext";
+import { SearchContext } from "../context/SearchContext";
 import { db } from "../firebase";
 
 const Chats = () => {
   const [chats, setChats] = useState({});
-
+  
   const { currentUser } = useContext(AuthContext);
   const { dispatch } = useContext(ChatContext);
-  
-  useEffect(() => {
-      const getChats = () =>{
-        const chatsSnap = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
-          console.log(doc.data());
-          setChats(()=>doc.data());
-       });
-       return chatsSnap();
-      }
-    
-      if (currentUser.uid){
-        getChats();
-      }
+  const{searchValue} = useContext(SearchContext);
+
+  useEffect(()=>{
+    if (currentUser.uid){
+      onSnapshot(doc(db, "userChats", currentUser.uid),(snapshot)=>{
+        const data = snapshot.data()
+        setChats(data)
+    })
+    } 
   }, [currentUser.uid]);
+
 
   const handleSelect = (u) => {
     dispatch({ type: "CHANGE_USER", payload: u });
   };
 
   return (
-    <div className="chats">
-      {Object.entries(chats || {})?.sort((a,b)=>b[1].date - a[1].date).map((chat) => (
+    <div>
+      {(searchValue.trim() === "" && Object.keys(chats).length !== 0)  && (<div className="chats">{Object.entries(chats).sort((a,b)=>b[1].date - a[1].date).map((chat) => {
+        return (
         <div
           className="userChat"
           key={chat[0]}
@@ -42,7 +41,9 @@ const Chats = () => {
             <p>{chat[1].lastMessage?.text}</p>
           </div>
         </div>
-      ))}
+      )
+      })}</div>)}
+      
     </div>
   );
 };

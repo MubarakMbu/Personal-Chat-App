@@ -86,7 +86,7 @@ const Register = () => {
             <img src={Add} alt="" />
             <span>{fileName}</span>
           </label>
-          <button className={loading && "btn__disable"} disabled={loading}>Sign up</button>
+          <button className={loading? "btn__disable":""} disabled={loading}>Sign up</button>
           {loading && "Uploading and compressing the image please wait..."}
           {err && <span>{err}</span>}
         </form>

@@ -11,7 +11,7 @@ const firebaseConfig = {
   projectId: "chat-app-28d7b",
   storageBucket: "chat-app-28d7b.appspot.com",
   messagingSenderId: "227634552926",
-  appId: "1:227634552926:web:ff392500d3af3fa41a94cf",
+  appId: process.env.REACT_APP_FIREBASE_appId,
   measurementId: "G-715BKZ2G5G"
 };
 
@@ -19,4 +19,4 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const storage = getStorage();
-export const db = getFirestore()
+export const db = getFirestore(app)

@@ -13,7 +13,6 @@ export const ChatContextProvider = ({ children }) => {
     chatId: "null",
     user: {},
   };
-
   const chatReducer = (state, action) => {
     switch (action.type) {
       case "CHANGE_USER":
@@ -37,4 +36,5 @@ export const ChatContextProvider = ({ children }) => {
       {children}
     </ChatContext.Provider>
   );
+
 };

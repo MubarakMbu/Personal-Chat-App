@@ -30,7 +30,7 @@ const Input = () => {
 
       uploadTask.on(
         (error) => {
-          //TODO:Handle Error
+          //handeling error
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
@@ -94,7 +94,7 @@ const Input = () => {
         <label htmlFor="file">
           <img src={Img} alt="" />
         </label>
-        <button className={(!text && !img) && "btn__disable"} disabled={!text && !img} onClick={handleSend}>Send</button>
+        <button className={(!text && !img)?"btn__disable":""} disabled={!text && !img} onClick={handleSend}>Send</button>
       </div>
       </form>
     </div>
