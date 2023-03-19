@@ -1,4 +1,6 @@
 import React from "react";
+import {signOut} from "firebase/auth"
+import { auth } from '../firebase'
 import Navbar from "./Navbar";
 import Users from "./Users";
 import Chats from "./Chats";
@@ -11,6 +13,7 @@ const Sidebar = () => {
       <Search/>
       <Users/>
       <Chats/>
+      <button className="logout" onClick={()=>signOut(auth)}>Logout</button>
     </div>
   );
 };

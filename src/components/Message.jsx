@@ -14,15 +14,11 @@ const Message = ({ message }) => {
   return (
     <div
       ref={ref}
-      className={`message ${message.senderId === currentUser.uid && "owner"}`}
+      className={`message ${message.senderId === currentUser.uid? "owner":""} ${message.img? "hasImg":""}`}
     >
-      <div className="messageInfo" >
-        <span className="timestamp">{new Date(message.date.seconds*1000).toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})}</span>
-      </div>
-      <div className="messageContent">
-        {message.text &&  <p>{message.text}</p>}
         {message.img && <img src={message.img} alt="" />}
-      </div>
+        {message.text &&  <p>{message.text}</p>}
+        <span className="timestamp">{new Date(message.date.seconds*1000).toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})}</span>
     </div>
   );
 };

@@ -40,7 +40,7 @@ const Users = () => {
     const getUsers = ()=>{
       setUsers(()=>{
         if (searchValue.trim() !== ""){
-          return usersInDb.current.filter((userDoc)=>(userDoc.data().displayName.startsWith(searchValue)));
+          return usersInDb.current.filter((userDoc)=>(userDoc.data().displayName.toLowerCase().startsWith(searchValue.toLowerCase())));
         }else{
           return ([]);
       }
@@ -61,15 +61,6 @@ const Users = () => {
         //create a chat in chats collection
         await setDoc(doc(db, "chats", combinedId), { messages: [] });
 
-        //create user chats
-        // await updateFirestoreDb("userChats",currentUser.uid,{
-        //   userInfo: {
-        //     uid: user.uid,
-        //     displayName: user.displayName,
-        //     photoURL: user.photoURL,
-        //   },
-        //   date: serverTimestamp(),
-        // })
         await updateDoc(doc(db, "userChats", currentUser.uid), {
           [combinedId + ".userInfo"]: {
             uid: user.uid,
@@ -78,14 +69,6 @@ const Users = () => {
           },
           [combinedId + ".date"]: serverTimestamp(),
         });
-        // await updateFirestoreDb("userChats", user.uid,{
-        //   userinfo : {
-        //     uid: currentUser.uid,
-        //     displayName: currentUser.displayName,
-        //     photoURL: currentUser.photoURL,
-        //   },
-        //   date : serverTimestamp(),
-        // });
         await updateDoc(doc(db, "userChats", user.uid), {
           [combinedId + ".userInfo"]: {
             uid: currentUser.uid,
@@ -103,13 +86,16 @@ const Users = () => {
     getAndSetSearchValue("");
   };
   return (
-    <div>
+    <div className="users" style={searchValue.trim() === "" ? {display:"none"}:{}}>
       {searchValue.trim() !== "" && (users.length > 0 ?
-        (<div className="users">{users.map((doc, id) => {
-            return (<User key={id} data={doc.data()} clickEvent={handleSelect}></User>)
-      })}</div>) : 
+        (users.map((doc, id) => (
+          <User key={id} data={{userInfo:doc.data()}} clickEvent={handleSelect}></User>
+        ))) : 
       <span>User not found!</span>)} 
     </div>);
 };
 
 export default Users;
+
+
+
